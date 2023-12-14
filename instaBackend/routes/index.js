@@ -26,7 +26,9 @@ router.get('/feed', async function (req, res) {
   res.render('feed', {
     footer: true,
     post: posts,
-    user
+    user,
+    profileImage : user.profileImage
+
   });
 
   // res.send(posts)
@@ -39,29 +41,42 @@ router.get('/profile', async function (req, res) {
 
   res.render('profile', {
     footer: true,
-    user: user
+    user: user,
+    profileImage : user.profileImage
   });
 });
 
-router.get('/search', isLoggedIn, function (req, res) {
+router.get('/search', isLoggedIn, async function (req, res) {
+  const user = await userModel.findOne({
+    username: req.session.passport.user
+  });
   res.render('search', {
-    footer: true
+    footer: true,
+    profileImage : user.profileImage
+
   });
 });
 
 router.get('/edit', isLoggedIn, async function (req, res) {
   const user = await userModel.findOne({
     username: req.session.passport.user
-  })
+  });
   res.render('edit', {
     footer: true,
-    user: user
+    user: user,
+    profileImage : user.profileImage
+
   });
 });
 
-router.get('/upload', isLoggedIn, function (req, res) {
+router.get('/upload', isLoggedIn, async function (req, res) {
+  const user = await userModel.findOne({
+    username: req.session.passport.user
+  });
   res.render('upload', {
-    footer: true
+    footer: true,
+    profileImage : user.profileImage
+
   });
 });
 
@@ -107,7 +122,8 @@ router.post('/update', upload.single("image"), async (req, res) => {
   }, {
     username: req.body.username,
     name: req.body.name,
-    bio: req.body.bio
+    bio: req.body.bio,
+    
   }, {
     new: true
   });
@@ -156,7 +172,48 @@ router.get('/like/post/:id', async (req,res)=>{
 
   await post.save();
   res.redirect("/feed");
+});
+router.post('/updatePost', upload.single("updateimage"), async function(req, res) {
+  
+    const updatePost = await postModel.findOneAndUpdate(
+      { _id: req.body.postId },
+      {
+        caption: req.body.caption
+        },
+      { new: true } // To return the updated document
+    );
+    if(req.file){
+updatePost.picture = req.file.filename;
+    }
+await updatePost.save();
+res.redirect("/feed"); 
+    console.log(updatePost._id == req.body.postId);
+  
+});
+
+
+router.get('/deletePost/:id', async function(req,res){
+  const deleteUser = await postModel.findOneAndDelete({
+    _id : req.params.id
+  });
+  if(deleteUser){
+    res.redirect("/feed");
+    console.log("deletepost", req.params.id);
+  }
+
+
 })
+
+router.get('/editPost/:id', async function(req,res){
+  const user = await userModel.findOne({
+    username: req.session.passport.user
+  });
+  const post = await postModel.findOne({ _id : req.params.id});
+
+  res.render('editpost', { footer :true , profileImage : user.profileImage, post : post  });
+})
+
+ 
 
 function isLoggedIn(req, res, next) {
   if (req.isAuthenticated()) {
