@@ -71,71 +71,91 @@
     </div>
 
 
-    
+
     <div class="posts mb-20">
 
 
-    
-        <% post.reverse().forEach(function(posts) {
-          
-          %>
-         
-      
-  
-      <div class="post mt-10 w-full min-h-[50vh]">
-        <div class="title px-4 flex items-center gap-2">
-          <div class="w-[8vw] h-[8vw] bg-sky-100 rounded-full overflow-hidden">
-            <img class="w-full h-full object-cover" src="images/uploads/<%= posts.user.profileImage %>" >
- </div>
-          <h4 class="text-sm"><%= posts.user.username %></h4>
-          <h6 class="text-xs opacity-30">
-            
-             <%= new Date(posts.date).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' }) %>
-             <%= new Date(posts.date).toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata' }) %>
-            </h6>
+
+      <% post.reverse().forEach(function(posts) { %>
 
 
-            <% console.log("userId",  user._id,posts.user._id, JSON.parse(JSON.stringify(user._id))== JSON.parse(JSON.stringify(posts.user._id)))%>
 
-             <% if(JSON.parse(JSON.stringify(user._id)) == JSON.parse(JSON.stringify(posts.user._id))){ %>
-
-            <div class="relative ml-auto">
-              <!-- Trigger button for the dropdown -->
-              <div id="<%= 'postOption_' + posts._id %>" class="editPost">
-                <i id="<%= 'menuLine_' + posts._id %>" class="text-[1.4rem] ri-menu-line"></i>
-              </div>
-              <!-- Dropdown menu -->
-              <div id="<%= 'dropdown_' + posts._id %>" class="absolute hidden mt-2  bg-zinc-900  border-black-300 rounded shadow-md right-0 w-20">
-                <a href="/editPost/<%= posts._id %>" class="block px-4 py-2 text-white-800 hover:bg-blue-500  hover:text-white">Edit</a>
-                <a href="/deletePost/<%= posts._id %>" class="block px-4 py-2 text-white-900 hover:bg-red-500 hover:text-white">Delete</a>
-              </div>
+        <div class="post mt-10 w-full min-h-[50vh]">
+          <div class="title px-4 flex items-center gap-2">
+            <div class="w-[8vw] h-[8vw] bg-sky-100 rounded-full overflow-hidden">
+              <img class="w-full h-full object-cover" src="images/uploads/<%= posts.user.profileImage %>">
             </div>
-            <% } %>
-          </div>
-  
-        <div class="w-full h-96 mt-4 bg-sky-100 overflow-hidden">
-          <img class="w-full h-full object-cover" src="images/uploads/<%= posts.picture %>" >
-        </div>
-        <div class="options w-full px-4 flex justify-between items-center text-[1.4rem]">
-          <div class="flex gap-3 mt-2">
-            <a href="/like/post/<%= posts._id %>"> 
-            <% if(posts.likes.indexOf(user._id) !== -1){ %>
-          <i class="ri-heart-3-fill text-red-600"></i>
-           <% }else{ %>
-           <i class="ri-heart-3-line"></i>
-<% } %>
-</a>
-            <i class="ri-chat-3-line"></i>
-            <i class="ri-share-circle-line"></i>
-          </div>
-          <i class="ri-bookmark-line"></i>
-        </div>
-        <h3 class="px-4 mt-2 text-sm leading-none tracking-tight"><%= posts.likes.length %> likes</h3>
-        <h2 class="text-white font-light text-sm mt-2"><span class="font-semibold pl-4 pr-2"><%= posts.user.username %></span><%= posts.caption %></h2>
-      </div>
-     
+            <h4 class="text-sm">
+              <%= posts.user.username %>
+            </h4>
 
-      <% }); %> 
+
+            <% if(JSON.parse(JSON.stringify(user._id)) !==  JSON.parse(JSON.stringify(posts.user._id))){ %>
+              
+              <div class="fllowbtn text-xs opacity-30 ml-1">
+                <% if(user?.following && !user?.following.includes(String(posts.user._id))) { %>
+                  <a href="/followinUser/<%= posts.user._id %>"
+                    class="bg-zinc-800 hover:bg-black-700 hover:text-white-700 hover:text-opacity-500 text-white font-bold py-2 px-2 rounded">Follow</a>
+                <% } else { %>
+                  <b class="text-blue-200 text-xsm">Following</b>
+                <% } %>
+              </div>
+
+              <% } %>
+
+                <h6 class="text-xs opacity-30 ml-auto">
+                  <!-- <%= new Date(posts.date).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' }) %> -->
+                  <%= new Date(posts.date).toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata' }) %>
+                </h6>
+
+                  <% if(JSON.parse(JSON.stringify(user._id))==JSON.parse(JSON.stringify(posts.user._id))){ %>
+
+                    <div class="relative ml-auto">
+                      <!-- Trigger button for the dropdown -->
+                      <div id="<%= 'postOption_' + posts._id %>" class="editPost">
+                        <i id="<%= 'menuLine_' + posts._id %>" class="text-[1.4rem] ri-menu-line"></i>
+                      </div>
+                      <!-- Dropdown menu -->
+                      <div id="<%= 'dropdown_' + posts._id %>"
+                        class="absolute hidden mt-2  bg-zinc-900  border-black-300 rounded shadow-md right-0 w-20">
+                        <a href="/editPost/<%= posts._id %>"
+                          class="block px-4 py-2 text-white-800 hover:bg-blue-500  hover:text-white">Edit</a>
+                        <a href="/deletePost/<%= posts._id %>"
+                          class="block px-4 py-2 text-white-900 hover:bg-red-500 hover:text-white">Delete</a>
+                      </div>
+                    </div>
+                    <% } %>
+          </div>
+
+          <div class="w-full h-96 mt-4 bg-sky-100 overflow-hidden">
+            <img class="w-full h-full object-cover" src="images/uploads/<%= posts.picture %>">
+          </div>
+          <div class="options w-full px-4 flex justify-between items-center text-[1.4rem]">
+            <div class="flex gap-3 mt-2">
+              <a href="/like/post/<%= posts._id %>">
+                <% if(posts.likes.indexOf(user._id) !==-1){ %>
+                  <i class="ri-heart-3-fill text-red-600"></i>
+                  <% }else{ %>
+                    <i class="ri-heart-3-line"></i>
+                    <% } %>
+              </a>
+              <i class="ri-chat-3-line"></i>
+              <i class="ri-share-circle-line"></i>
+            </div>
+            <i class="ri-bookmark-line"></i>
+          </div>
+          <h3 class="px-4 mt-2 text-sm leading-none tracking-tight">
+            <%= posts.likes.length %> likes
+          </h3>
+          <h2 class="text-white font-light text-sm mt-2"><span class="font-semibold pl-4 pr-2">
+              <%= posts.user.username %>
+            </span>
+            <%= posts.caption %>
+          </h2>
+        </div>
+
+
+        <% }); %>
     </div>
 
     <script>
@@ -147,7 +167,7 @@
           if (postOption) {
             // Extract the post ID from the postOption ID
             var postId = postOption.id.split('_')[1];
-  
+
             // Get the corresponding dropdown and toggle its visibility
             var dropdown = document.getElementById('dropdown_' + postId);
             if (dropdown) {

@@ -27,7 +27,7 @@ router.get('/feed', async function (req, res) {
     footer: true,
     post: posts,
     user,
-    profileImage : user.profileImage
+    profileImage: user.profileImage
 
   });
 
@@ -42,7 +42,7 @@ router.get('/profile', async function (req, res) {
   res.render('profile', {
     footer: true,
     user: user,
-    profileImage : user.profileImage
+    profileImage: user.profileImage
   });
 });
 
@@ -52,7 +52,7 @@ router.get('/search', isLoggedIn, async function (req, res) {
   });
   res.render('search', {
     footer: true,
-    profileImage : user.profileImage
+    profileImage: user.profileImage
 
   });
 });
@@ -64,7 +64,7 @@ router.get('/edit', isLoggedIn, async function (req, res) {
   res.render('edit', {
     footer: true,
     user: user,
-    profileImage : user.profileImage
+    profileImage: user.profileImage
 
   });
 });
@@ -75,7 +75,7 @@ router.get('/upload', isLoggedIn, async function (req, res) {
   });
   res.render('upload', {
     footer: true,
-    profileImage : user.profileImage
+    profileImage: user.profileImage
 
   });
 });
@@ -123,7 +123,7 @@ router.post('/update', upload.single("image"), async (req, res) => {
     username: req.body.username,
     name: req.body.name,
     bio: req.body.bio,
-    
+
   }, {
     new: true
   });
@@ -152,51 +152,56 @@ router.post('/upload', isLoggedIn, upload.single("image"), async (req, res) => {
 });
 
 
-router.get('/username/:username', async (req,res)=>{
-  const regex = new RegExp(`^${req.params.username}`,'i');
-const findUser = await userModel.find({
-name : regex 
-});
-res.json(findUser);
+router.get('/username/:username', async (req, res) => {
+  const regex = new RegExp(`^${req.params.username}`, 'i');
+  const findUser = await userModel.find({
+    name: regex
+  });
+  res.json(findUser);
 });
 
 
-router.get('/like/post/:id', async (req,res)=>{
-  const users = await userModel.findOne({ username : req.session.passport.user });
-  const post = await postModel.findOne({ _id : req.params.id});
-  if(post.likes.indexOf(users._id) === -1){
+router.get('/like/post/:id', async (req, res) => {
+  const users = await userModel.findOne({
+    username: req.session.passport.user
+  });
+  const post = await postModel.findOne({
+    _id: req.params.id
+  });
+  if (post.likes.indexOf(users._id) === -1) {
     post.likes.push(users._id);
-  }else{
+  } else {
     post.likes.splice(post.likes.indexOf(users._id), 1);
   }
 
   await post.save();
   res.redirect("/feed");
 });
-router.post('/updatePost', upload.single("updateimage"), async function(req, res) {
-  
-    const updatePost = await postModel.findOneAndUpdate(
-      { _id: req.body.postId },
-      {
-        caption: req.body.caption
-        },
-      { new: true } // To return the updated document
-    );
-    if(req.file){
-updatePost.picture = req.file.filename;
-    }
-await updatePost.save();
-res.redirect("/feed"); 
-    console.log(updatePost._id == req.body.postId);
-  
+router.post('/updatePost', upload.single("updateimage"), async function (req, res) {
+
+  const updatePost = await postModel.findOneAndUpdate({
+      _id: req.body.postId
+    }, {
+      caption: req.body.caption
+    }, {
+      new: true
+    } // To return the updated document
+  );
+  if (req.file) {
+    updatePost.picture = req.file.filename;
+  }
+  await updatePost.save();
+  res.redirect("/feed");
+  console.log(updatePost._id == req.body.postId);
+
 });
 
 
-router.get('/deletePost/:id', async function(req,res){
+router.get('/deletePost/:id', async function (req, res) {
   const deleteUser = await postModel.findOneAndDelete({
-    _id : req.params.id
+    _id: req.params.id
   });
-  if(deleteUser){
+  if (deleteUser) {
     res.redirect("/feed");
     console.log("deletepost", req.params.id);
   }
@@ -204,16 +209,40 @@ router.get('/deletePost/:id', async function(req,res){
 
 })
 
-router.get('/editPost/:id', async function(req,res){
+router.get('/editPost/:id', async function (req, res) {
   const user = await userModel.findOne({
     username: req.session.passport.user
   });
-  const post = await postModel.findOne({ _id : req.params.id});
+  const post = await postModel.findOne({
+    _id: req.params.id
+  });
 
-  res.render('editpost', { footer :true , profileImage : user.profileImage, post : post  });
-})
+  res.render('editpost', {
+    footer: true,
+    profileImage: user.profileImage,
+    post: post
+  });
+});
 
- 
+router.get('/followinUser/:id', async function (req, res) {
+  const postUserID = req.params.id;
+
+  const postuser = await userModel.findOne({
+    _id: postUserID
+  });
+
+  const currentUserUpdateField = await userModel.findOne({
+    username: req.session.passport.user
+  });
+
+  postuser.followers.push(currentUserUpdateField._id);
+  currentUserUpdateField.following.push(postUserID);
+  await currentUserUpdateField.save();
+  await postuser.save();
+  res.redirect("/feed");
+});
+
+
 
 function isLoggedIn(req, res, next) {
   if (req.isAuthenticated()) {
