@@ -224,7 +224,7 @@ router.get('/editPost/:id', async function (req, res) {
   });
 });
 
-router.get('/followinUser/:id', async function (req, res) {
+router.get('/followingUser/:id', async function (req, res) {
   const postUserID = req.params.id;
 
   const postuser = await userModel.findOne({
@@ -241,6 +241,44 @@ router.get('/followinUser/:id', async function (req, res) {
   await postuser.save();
   res.redirect("/feed");
 });
+
+
+router.get('/unfollowingUser/:id', async function (req, res) {
+  const postUserID = req.params.id;
+
+  try {
+    // Find the user to unfollow
+    const postuser = await userModel.findOne({
+      _id: postUserID
+    });
+
+    // Find the current user
+    const currentUserUpdateField = await userModel.findOne({
+      username: req.session.passport.user
+    });
+
+    // Remove the postuser from the followers list of the current user
+    currentUserUpdateField.following = currentUserUpdateField.following.filter(
+      (followedUserId) => followedUserId.toString() !== postUserID
+    );
+
+    // Remove the current user from the following list of the postuser
+    postuser.followers = postuser.followers.filter(
+      (followerId) => followerId.toString() !== currentUserUpdateField._id.toString()
+    );
+
+    // Save the changes
+    await currentUserUpdateField.save();
+    await postuser.save();
+
+    res.redirect("/feed");
+  } catch (error) {
+    console.error("Error during unfollow:", error);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+
 
 
 

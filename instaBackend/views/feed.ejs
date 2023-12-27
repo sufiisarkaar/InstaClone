@@ -94,10 +94,10 @@
               
               <div class="fllowbtn text-xs opacity-30 ml-1">
                 <% if(user?.following && !user?.following.includes(String(posts.user._id))) { %>
-                  <a href="/followinUser/<%= posts.user._id %>"
+                  <a href="/followingUser/<%= posts.user._id %>"
                     class="bg-zinc-800 hover:bg-black-700 hover:text-white-700 hover:text-opacity-500 text-white font-bold py-2 px-2 rounded">Follow</a>
                 <% } else { %>
-                  <b class="text-blue-200 text-xsm">Following</b>
+                  <a href="/unfollowingUser/<%= posts.user._id %>" class="text-blue-200 text-xsm">Following</a>
                 <% } %>
               </div>
 
