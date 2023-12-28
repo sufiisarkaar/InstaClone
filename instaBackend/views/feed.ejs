@@ -85,9 +85,9 @@
             <div class="w-[8vw] h-[8vw] bg-sky-100 rounded-full overflow-hidden">
               <img class="w-full h-full object-cover" src="images/uploads/<%= posts.user.profileImage %>">
             </div>
-            <h4 class="text-sm">
+            <a class="text-sm" href="/usersprofile/<%= posts.user._id %>">
               <%= posts.user.username %>
-            </h4>
+            </a>
 
 
             <% if(JSON.parse(JSON.stringify(user._id)) !==  JSON.parse(JSON.stringify(posts.user._id))){ %>
