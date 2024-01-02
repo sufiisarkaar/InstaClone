@@ -18,7 +18,7 @@ router.get('/login', function (req, res) {
   });
 });
 
-router.get('/feed', async function (req, res) {
+router.get('/feed',  isLoggedIn, async function (req, res) {
   const user = await userModel.findOne({
     username: req.session.passport.user
   });
@@ -34,7 +34,7 @@ router.get('/feed', async function (req, res) {
   // res.send(posts)
 });
 
-router.get('/profile', async function (req, res) {
+router.get('/profile',isLoggedIn, async function (req, res) {
   const user = await userModel.findOne({
     username: req.session.passport.user
   }).populate("posts");
@@ -116,7 +116,7 @@ router.get('/logout', function (req, res, next) {
 
 
 
-router.post('/update', upload.single("image"), async (req, res) => {
+router.post('/update',isLoggedIn, upload.single("image"), async (req, res) => {
   const user = await userModel.findOneAndUpdate({
     username: req.session.passport.user
   }, {
@@ -152,7 +152,7 @@ router.post('/upload', isLoggedIn, upload.single("image"), async (req, res) => {
 });
 
 
-router.get('/username/:username', async (req, res) => {
+router.get('/username/:username',isLoggedIn, async (req, res) => {
   const regex = new RegExp(`^${req.params.username}`, 'i');
   const findUser = await userModel.find({
     name: regex
@@ -161,7 +161,7 @@ router.get('/username/:username', async (req, res) => {
 });
 
 
-router.get('/like/post/:id', async (req, res) => {
+router.get('/like/post/:id',isLoggedIn, async (req, res) => {
   const users = await userModel.findOne({
     username: req.session.passport.user
   });
@@ -177,7 +177,7 @@ router.get('/like/post/:id', async (req, res) => {
   await post.save();
   res.redirect("/feed");
 });
-router.post('/updatePost', upload.single("updateimage"), async function (req, res) {
+router.post('/updatePost',isLoggedIn, upload.single("updateimage"), async function (req, res) {
 
   const updatePost = await postModel.findOneAndUpdate({
       _id: req.body.postId
@@ -197,7 +197,7 @@ router.post('/updatePost', upload.single("updateimage"), async function (req, re
 });
 
 
-router.get('/deletePost/:id', async function (req, res) {
+router.get('/deletePost/:id',isLoggedIn, async function (req, res) {
   const deleteUser = await postModel.findOneAndDelete({
     _id: req.params.id
   });
@@ -209,7 +209,7 @@ router.get('/deletePost/:id', async function (req, res) {
 
 })
 
-router.get('/editPost/:id', async function (req, res) {
+router.get('/editPost/:id',isLoggedIn, async function (req, res) {
   const user = await userModel.findOne({
     username: req.session.passport.user
   });
@@ -224,7 +224,7 @@ router.get('/editPost/:id', async function (req, res) {
   });
 });
 
-router.get('/followingUser/:id', async function (req, res) {
+router.get('/followingUser/:id',isLoggedIn, async function (req, res) {
   const postUserID = req.params.id;
 
   const postuser = await userModel.findOne({
@@ -243,7 +243,7 @@ router.get('/followingUser/:id', async function (req, res) {
 });
 
 
-router.get('/unfollowingUser/:id', async function (req, res) {
+router.get('/unfollowingUser/:id',isLoggedIn, async function (req, res) {
   const postUserID = req.params.id;
 
   try {
@@ -281,7 +281,7 @@ router.get('/unfollowingUser/:id', async function (req, res) {
 
 
 
-router.get('/followingUserViaProfile/:id', async function (req, res) {
+router.get('/followingUserViaProfile/:id',isLoggedIn, async function (req, res) {
   const postUserID = req.params.id;
 
   const postuser = await userModel.findOne({
@@ -300,7 +300,7 @@ router.get('/followingUserViaProfile/:id', async function (req, res) {
 });
 
 
-router.get('/unfollowingUserViaProfile/:id', async function (req, res) {
+router.get('/unfollowingUserViaProfile/:id', isLoggedIn, async function (req, res) {
   const postUserID = req.params.id;
 
   try {
@@ -339,7 +339,7 @@ router.get('/unfollowingUserViaProfile/:id', async function (req, res) {
 
 
 
-router.get('/usersprofile/:id', async function(req,res){
+router.get('/usersprofile/:id',isLoggedIn, async function(req,res){
   const userProfile = await userModel.findOne({
     _id : req.params.id
   }).populate('posts');
@@ -356,6 +356,20 @@ router.get('/usersprofile/:id', async function(req,res){
     footer : true,
   })
 });
+
+
+router.post('/comment/:postId', isLoggedIn, async function(req,res){
+  const userName = req.session.passport.user;
+  const postId = req.params.postId;
+  const postUser = await postModel.find({
+    _id : postId
+  }).populate('user');
+
+  // postUser.comments.push('req.body.comment');
+  // await postUser.save();
+
+  console.log("req", postUser);
+})
 
 
 function isLoggedIn(req, res, next) {
