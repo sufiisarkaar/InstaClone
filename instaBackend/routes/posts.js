@@ -24,6 +24,8 @@ const postSchema = mongoose.Schema({
         ref: 'user',
       },
       comment: String,
+      userProfile : String,
+      postUser : String
     }
   ],
   caption : String

@@ -147,16 +147,9 @@
           </div>
           <i class="ri-bookmark-line"></i>
         </div>
-       
+
 
       </div>
-
-
-    
-
-
-
-
 
 
       <h3 class="px-4 mt-2 text-sm leading-none tracking-tight">
@@ -173,29 +166,35 @@
         <input type="text" name="comment" class="m-3 p-2 bg-zinc-500 rounded form-control" />
         <button>send</button>
       </form>
+
+
+      <% posts.comments.reverse().slice(0, 3).forEach((cmt)=>{ 
+     
+        %>
+  <div class="comment-container mt-3 mb-2 title px-4 flex items-center gap-2" data-post-id="<%= posts._id %>">
+        <div class="w-[5vw] h-[5vw] bg-sky-100 rounded-full overflow-hidden">
+          
+          <img class="w-full h-full object-cover" src="images/uploads/<%= cmt.userProfile %>">
+        </div>
+        <small><%= cmt.comment %></small>
+      </div>
+      <%  }) %>
     </div>
-
-
     <% }); %>
   </div>
 
+
   <script>
-    // JavaScript to toggle visibility of the dropdown menu
     document.addEventListener("DOMContentLoaded", function () {
       document.addEventListener('click', function (event) {
-        // Check if the clicked element is a postOption
         var postOption = event.target.closest('.editPost');
         if (postOption) {
-          // Extract the post ID from the postOption ID
           var postId = postOption.id.split('_')[1];
-
-          // Get the corresponding dropdown and toggle its visibility
           var dropdown = document.getElementById('dropdown_' + postId);
           if (dropdown) {
             dropdown.classList.toggle('hidden');
           }
         } else {
-          // Close all dropdowns if the click is outside any postOption
           var allDropdowns = document.querySelectorAll('.absolute');
           allDropdowns.forEach(function (dropdown) {
             dropdown.classList.add('hidden');
@@ -211,21 +210,12 @@
 
       dblClks.forEach(function (dblClk) {
         dblClk.addEventListener('dblclick', function () {
-          // Get the post ID from the data attribute
           let postId = dblClk.getAttribute('data-post-id');
           console.log(postId, "postID");
-
-          // Check if postId is available
           if (postId) {
-            // Find the common parent container for doubleClick and likePost
             let container = dblClk.closest('.post-container');
-
-            // Check if the container is available
             if (container) {
-              // Find the likePost element within the container
               let lkpst = container.querySelector('.likePost[data-post-id="' + postId + '"]');
-
-              // Check if the likePost element exists
               if (lkpst) {
                 lkpst.click();
               } else {
@@ -243,29 +233,22 @@
   </script>
 
 
-<script>
-  // Get all elements with the class 'comments'
-  let commentsIcons = document.querySelectorAll('.comments');
-
-  // Iterate through each comments icon
-  commentsIcons.forEach(function (icon) {
-    // Add a click event listener to each icon
-    icon.addEventListener('click', function () {
-      // Get the corresponding post ID from the parent container
-      let postId = icon.closest('.post-container').getAttribute('data-post-id');
-
-      // Find the comment form with the matching post ID
-      let commentForm = document.querySelector('.comment-form[data-post-id="' + postId + '"]');
-
-      // Check if the comment form exists
-      if (commentForm) {
-        // Toggle the visibility of the comment form
-        commentForm.style.display = (commentForm.style.display === 'none' || commentForm.style.display ===
-          '') ? 'block' : 'none';
-      }
+  <script>
+    let commentsIcons = document.querySelectorAll('.comments');
+    commentsIcons.forEach(function (icon) {
+      icon.addEventListener('click', function () {
+        let postId = icon.closest('.post-container').getAttribute('data-post-id');
+        let commentForm = document.querySelector('.comment-form[data-post-id="' + postId + '"]');
+        if (commentForm) {
+          commentForm.style.display = (commentForm.style.display === 'none' || commentForm.style.display ===
+            '') ? 'block' : 'none';
+        }
+      });
     });
-  });
-</script>
+  </script>
+
+
+
 
 </div>
 <%- include ('partials/footer') %>

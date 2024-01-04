@@ -15,6 +15,8 @@ import { SearchComponent } from './components/views/search/search.component';
 import { UploadComponent } from './components/views/upload/upload.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
+import { EditpostComponent } from './components/views/editpost/editpost.component';
+
 
 @NgModule({
   declarations: [
@@ -28,7 +30,8 @@ import { HttpClientModule } from '@angular/common/http';
     LoginComponent,
     ProfileComponent,
     SearchComponent,
-    UploadComponent
+    UploadComponent,
+    EditpostComponent
   ],
   imports: [
     BrowserModule,
