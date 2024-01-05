@@ -1,21 +1,20 @@
-
 const postModel = require('../posts');
-const userModel = require('../users');
-const upload = require('../multer');
 
+postUpdateController =  async function (req, res) {
 
-postUpdateController = upload.single("image"), async (req, res) => {
-    const user = await userModel.findOne({
-      username: req.session.passport.user
-    });
-    const post = await postModel.create({
-      picture: req.file.filename,
-      user: user._id,
-      caption: req.body.caption
-    });
-    user.posts.push(post._id);
-    await user.save();
+    const updatePost = await postModel.findOneAndUpdate({
+        _id: req.body.postId
+      }, {
+        caption: req.body.caption
+      }, {
+        new: true
+      } // To return the updated document
+    );
+    if (req.file) {
+      updatePost.picture = req.file.filename;
+    }
+    await updatePost.save();
     res.redirect("/feed");
-  };
+  }
 
   module.exports = { postUpdateController };

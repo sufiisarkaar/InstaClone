@@ -6,3 +6,6 @@ a:focus {
   outline: none !important;
 }
 
+.small{
+  font-size: 10px;
+}

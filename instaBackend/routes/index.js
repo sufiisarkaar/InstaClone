@@ -14,7 +14,11 @@ const { loginController } = require('./controller/login.controller');
 const { logoutController } = require('./controller/logout.controller');
 const { postUploadController } = require('./controller/postUpload.controller');
 const { profileUpdateController } = require('./controller/profileUpdate.controller');
+const { postController } = require('./controller/post.controller');
+const { postLikeController } = require('./controller/postLike.controller');
 const { postUpdateController } = require('./controller/postUpdate.controller');
+const { postDeleteController } = require('./controller/postDelete.controller');
+const { deleteCommentController } = require('./controller/deleteComment.controller');
 passport.use(new localStrategy(userModel.authenticate()));
 router.get('/', function (req, res) {
   res.render('index', {
@@ -49,7 +53,7 @@ router.get('/logout', logoutController);
 router.post('/update', isLoggedIn, upload.single("image"), profileUpdateController );
 
 
-router.post('/upload', isLoggedIn, postUpdateController );
+router.post('/upload', isLoggedIn,upload.single("image"),  postController );
 
 
 router.get('/username/:username', isLoggedIn, async (req, res) => {
@@ -61,50 +65,12 @@ router.get('/username/:username', isLoggedIn, async (req, res) => {
 });
 
 
-router.get('/like/post/:id', isLoggedIn, async (req, res) => {
-  const users = await userModel.findOne({
-    username: req.session.passport.user
-  });
-  const post = await postModel.findOne({
-    _id: req.params.id
-  });
-  if (post.likes.indexOf(users._id) === -1) {
-    post.likes.push(users._id);
-  } else {
-    post.likes.splice(post.likes.indexOf(users._id), 1);
-  }
+router.get('/like/post/:id', isLoggedIn, postLikeController);
 
-  await post.save();
-  res.redirect("/feed");
-});
-router.post('/updatePost', isLoggedIn, upload.single("updateimage"), async function (req, res) {
-
-  const updatePost = await postModel.findOneAndUpdate({
-      _id: req.body.postId
-    }, {
-      caption: req.body.caption
-    }, {
-      new: true
-    } // To return the updated document
-  );
-  if (req.file) {
-    updatePost.picture = req.file.filename;
-  }
-  await updatePost.save();
-  res.redirect("/feed");
-});
+router.post('/updatePost', isLoggedIn, upload.single("updateimage"), postUpdateController);
 
 
-router.get('/deletePost/:id', isLoggedIn, async function (req, res) {
-  const deleteUser = await postModel.findOneAndDelete({
-    _id: req.params.id
-  });
-  if (deleteUser) {
-    res.redirect("/feed");
-  }
-
-
-})
+router.get('/deletePost/:id', isLoggedIn, postDeleteController);
 
 router.get('/editPost/:id', isLoggedIn, async function (req, res) {
   const user = await userModel.findOne({
@@ -273,6 +239,8 @@ router.post('/comment/:postId', isLoggedIn, async function (req, res) {
   res.redirect('/feed');
 });
 
+
+router.get('/deleteComment/:postId/:commentId', isLoggedIn , deleteCommentController )
 
 function isLoggedIn(req, res, next) {
   if (req.isAuthenticated()) {

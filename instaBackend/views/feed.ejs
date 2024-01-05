@@ -168,7 +168,7 @@
       </form>
 
 
-      <% posts.comments.reverse().slice(0, 3).forEach((cmt)=>{ 
+      <% posts.comments.reverse().forEach((cmt)=>{ 
      
         %>
   <div class="comment-container mt-3 mb-2 title px-4 flex items-center gap-2" data-post-id="<%= posts._id %>">
@@ -176,7 +176,12 @@
           
           <img class="w-full h-full object-cover" src="images/uploads/<%= cmt.userProfile %>">
         </div>
-        <small><%= cmt.comment %></small>
+        <small><%= cmt.comment %></small>  
+
+        <% if(JSON.parse(JSON.stringify(user._id))==JSON.parse(JSON.stringify(cmt.user._id))){ %>
+          <a href="/deleteComment/<%= posts._id %>/<%= cmt._id %>"><i class="ri-delete-bin-7-line small"></i></a>
+<% } %>
+
       </div>
       <%  }) %>
     </div>
