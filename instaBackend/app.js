@@ -9,7 +9,7 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
 const passport = require('passport');
-
+const cors = require('cors');
 var app = express();
 
 
@@ -20,7 +20,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
 
-
+app.use(cors());
 app.use(expressSession({
   resave : false,
   saveUninitialized : false,

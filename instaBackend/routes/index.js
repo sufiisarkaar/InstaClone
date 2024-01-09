@@ -1,4 +1,5 @@
 var express = require('express');
+const cors = require('cors');
 var router = express.Router();
 const userModel = require('./users');
 const postModel = require('./posts');
@@ -19,6 +20,12 @@ const { postLikeController } = require('./controller/postLike.controller');
 const { postUpdateController } = require('./controller/postUpdate.controller');
 const { postDeleteController } = require('./controller/postDelete.controller');
 const { deleteCommentController } = require('./controller/deleteComment.controller');
+const { login_Controller } = require('./controller/loginController');
+
+
+
+
+
 passport.use(new localStrategy(userModel.authenticate()));
 router.get('/', function (req, res) {
   res.render('index', {
@@ -42,7 +49,7 @@ router.get('/edit', isLoggedIn, userEditController);
 
 router.get('/upload', isLoggedIn, postUploadController);
 
-router.post('/register', userRegisterController);
+router.post('/register', cors(), userRegisterController);
 
 
 router.post('/login', loginController);
@@ -240,7 +247,10 @@ router.post('/comment/:postId', isLoggedIn, async function (req, res) {
 });
 
 
-router.get('/deleteComment/:postId/:commentId', isLoggedIn , deleteCommentController )
+router.get('/deleteComment/:postId/:commentId', isLoggedIn , deleteCommentController );
+
+router.post('/loginInFrontEnd', login_Controller );
+
 
 function isLoggedIn(req, res, next) {
   if (req.isAuthenticated()) {
